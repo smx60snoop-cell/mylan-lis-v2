@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LIS Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/css/notifications.css">
+    <link rel="stylesheet" href="/css/realtime-indicators.css">
+
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        header {
+            background: #004aad;
+            padding: 15px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav a {
+            margin-right: 15px;
+            color: white;
+            text-decoration: none;
+        }
+        #notificationBadge {
+            background: red;
+            padding: 3px 7px;
+            border-radius: 50%;
+            font-size: 11px;
+            color: white;
+        }
+        #notificationBox {
+            background: white;
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            width: 280px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            display: none;
+            z-index: 999;
+        }
+        .notification-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        #realtimeStatus {
+            margin-left: 10px;
+        }
+        .container { padding: 20px; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <h2>LIS Admin</h2>
+    </div>
+
+    <nav>
+        <a href="admin.html">Dashboard</a>
+        <a href="applications.html">Applications</a>
+        <a href="parcels.html">Parcels</a>
+        <a href="listings.html">Listings</a>
+    </nav>
+
+    <div style="position: relative; cursor: pointer;" onclick="toggleNotifications()">
+        🔔 <span id="notificationBadge">0</span>
+        <div id="notificationBox"></div>
+    </div>
+</header>
+
+<div class="container">
+
+    <h3>Admin Dashboard</h3>
+
+    <div>
+        <span>Realtime Connection:</span>
+        <span id="realtimeStatus" class="realtime-indicator">Offline</span>
+    </div>
+
+    <div id="dashboardContent">
+        <p>Loading dashboard...</p>
+    </div>
+
+</div>
+
+<script>
+function toggleNotifications() {
+    const box = document.getElementById("notificationBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+}
+</script>
+
+<!-- Scripts -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/helpers.js"></script>
+<script src="/js/notifications.js"></script>
+<script src="/js/socket.js"></script>
+<script src="/js/dashboard.js"></script>
+
+</body>
+</html>
