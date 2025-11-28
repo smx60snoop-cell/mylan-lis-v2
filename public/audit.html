@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LIS Audit Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/css/notifications.css">
+    <link rel="stylesheet" href="/css/realtime-indicators.css">
+
+    <style>
+        body { margin: 0; font-family: Arial; }
+        header {
+            padding: 15px;
+            background: #2b2b2b;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+        }
+        #notificationBadge {
+            background: red;
+            padding: 3px 6px;
+            border-radius: 50%;
+            font-size: 11px;
+        }
+        #notificationBox {
+            position: absolute;
+            right: 15px;
+            top: 60px;
+            width: 250px;
+            display: none;
+            background: white;
+            border: 1px solid #ccc;
+            max-height: 350px;
+            overflow-y: auto;
+            z-index: 999;
+        }
+        .notification-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        .notif-title { font-weight: bold; }
+        .container { padding: 20px; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h2>Audit Panel</h2>
+
+    <div onclick="toggleNotifications()" style="cursor: pointer;">
+        🔔 <span id="notificationBadge">0</span>
+        <div id="notificationBox"></div>
+    </div>
+</header>
+
+<div class="container">
+
+    <h3>Audit Dashboard</h3>
+
+    <p>Monitoring system changes in real-time.</p>
+
+    <div id="realtimeStatus" class="realtime-indicator">Offline</div>
+
+    <div id="auditLogs">
+        <p>Listening for system updates...</p>
+    </div>
+
+</div>
+
+<script>
+function toggleNotifications() {
+    const box = document.getElementById("notificationBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+}
+</script>
+
+<!-- JS Includes -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/helpers.js"></script>
+<script src="/js/notifications.js"></script>
+<script src="/js/socket.js"></script>
+
+</body>
+</html>
