@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MyLAN InfoTech – Land Information System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/notifications.css">
+    <link rel="stylesheet" href="/css/realtime-indicators.css">
+
+    <style>
+        body { font-family: Arial, sans-serif; }
+        header {
+            padding: 15px;
+            background: #0b3d91;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #notificationBadge {
+            background: red;
+            padding: 3px 7px;
+            border-radius: 50%;
+            font-size: 12px;
+            color: white;
+            margin-left: 6px;
+        }
+        #notificationBox {
+            background: white;
+            position: absolute;
+            right: 15px;
+            top: 60px;
+            width: 260px;
+            max-height: 350px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 999;
+        }
+        .notification-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .notif-title { font-weight: bold; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <h2>MyLAN InfoTech</h2>
+    </div>
+
+    <div style="position: relative;">
+        <span onclick="toggleNotifications()" style="cursor:pointer;">
+            🔔 Notifications <span id="notificationBadge">0</span>
+        </span>
+
+        <div id="notificationBox"></div>
+    </div>
+</header>
+
+<main style="padding: 20px;">
+    <h3>Welcome to the Land Information System</h3>
+    <p>This is the public portal.</p>
+
+    <div id="realtimeStatus" class="realtime-indicator">Offline</div>
+</main>
+
+<script>
+function toggleNotifications() {
+    const box = document.getElementById("notificationBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+}
+</script>
+
+<!-- Socket.IO and RT scripts -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/helpers.js"></script>
+<script src="/js/notifications.js"></script>
+<script src="/js/socket.js"></script>
+
+</body>
+</html>
