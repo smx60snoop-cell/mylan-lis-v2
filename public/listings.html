@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listings – Land Information System</title>
+
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/realtime-indicators.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f2f4f8;
+        }
+
+        .topbar {
+            background-color: #0b3d91;
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar .title {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .notif-icon {
+            cursor: pointer;
+            position: relative;
+            font-size: 22px;
+        }
+
+        .notif-count {
+            background: red;
+            color: white;
+            padding: 3px 7px;
+            border-radius: 50%;
+            font-size: 11px;
+            position: absolute;
+            top: -6px;
+            right: -10px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .listing-card {
+            background: white;
+            padding: 18px;
+            margin-bottom: 18px;
+            border-radius: 8px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+        }
+
+        .listing-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0b3d91;
+        }
+
+        .empty-message {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            text-align: center;
+            color: #777;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+
+<body onload="initListings()">
+
+    <!-- TOP NAV BAR -->
+    <div class="topbar">
+        <div class="title">MyLAN InfoTech</div>
+
+        <div class="notif-icon" onclick="toggleNotifications()">
+            🔔
+            <span id="notifCount" class="notif-count">0</span>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION DROPDOWN -->
+    <div id="notificationBox"
+         style="display:none; position:absolute; right:20px; top:70px;
+         width:300px; background:white; padding:10px; max-height:350px;
+         overflow-y:auto; border-radius:6px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
+        <h4>Notifications</h4>
+        <div id="notificationList"></div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="content">
+        <h2>Available Land Listings</h2>
+
+        <div id="listingContainer">
+            <div class="empty-message">Loading listings...</div>
+        </div>
+    </div>
+
+    <!-- REQUIRED JS FILES -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/helpers.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/socket.js"></script>
+
+    <!-- PAGE LOGIC -->
+    <script>
+        async function initListings() {
+            console.log("📄 Loading listings page...");
+            loadNotifications();
+            initSocketConnection();
+            await loadListings();
+        }
+
+        async function loadListings() {
+            const container = document.getElementById("listingContainer");
+            container.innerHTML = `<div class="empty-message">Loading listings...</div>`;
+
+            try {
+                const res = await api.get("/listings");
+                console.log("Listings loaded:", res);
+
+                if (!res || res.length === 0) {
+                    container.innerHTML = `<div class="empty-message">No land listings available.</div>`;
+                    return;
+                }
+
+                container.innerHTML = "";
+
+                res.forEach(listing => {
+                    container.innerHTML += `
+                        <div class="listing-card">
+                            <div class="listing-title">${listing.title}</div>
+                            <p><strong>Location:</strong> ${listing.location}</p>
+                            <p><strong>Price:</strong> ${listing.price}</p>
+                            <p>${listing.description || ""}</p>
+                        </div>
+                    `;
+                });
+
+            } catch (err) {
+                console.error("Failed to load listings", err);
+                container.innerHTML =
+                    `<div class="empty-message">Cannot load listings right now.</div>`;
+            }
+        }
+
+        function toggleNotifications() {
+            const box = document.getElementById("notificationBox");
+            box.style.display = box.style.display === "block" ? "none" : "block";
+        }
+    </script>
+
+</body>
+</html>
