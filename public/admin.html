@@ -2,114 +2,158 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LIS Admin Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="/css/notifications.css">
-    <link rel="stylesheet" href="/css/realtime-indicators.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/realtime-indicators.css">
 
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; }
-        header {
-            background: #004aad;
-            padding: 15px;
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+        }
+
+        /* HEADER BAR */
+        .topbar {
+            background-color: #003c8f;
+            padding: 15px 20px;
             color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        nav a {
-            margin-right: 15px;
+
+        .topbar .nav-links a {
+            margin-right: 20px;
             color: white;
             text-decoration: none;
+            font-weight: bold;
         }
-        #notificationBadge {
+
+        .topbar .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* CONTENT */
+        .content {
+            padding: 25px;
+        }
+
+        /* Notifications icon */
+        .notif-icon {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .notif-count {
             background: red;
-            padding: 3px 7px;
-            border-radius: 50%;
-            font-size: 11px;
             color: white;
-        }
-        #notificationBox {
-            background: white;
+            border-radius: 50%;
+            padding: 3px 7px;
+            font-size: 11px;
             position: absolute;
-            top: 60px;
-            right: 20px;
-            width: 280px;
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            display: none;
-            z-index: 999;
+            top: -5px;
+            right: -10px;
         }
-        .notification-item {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        #realtimeStatus {
-            margin-left: 10px;
-        }
-        .container { padding: 20px; }
     </style>
+
 </head>
 
-<body>
+<body onload="initAdminPage()">
 
-<header>
-    <div>
-        <h2>LIS Admin</h2>
+    <!-- TOP HEADER -->
+    <div class="topbar">
+        <div class="logo-text">LIS Admin</div>
+
+        <div class="nav-links">
+            <a href="admin.html">Dashboard</a>
+            <a href="applications.html">Applications</a>
+            <a href="parcels.html">Parcels</a>
+            <a href="listings.html">Listings</a>
+        </div>
+
+        <div class="notif-icon" onclick="toggleNotifications()">
+            🔔
+            <span id="notifCount" class="notif-count">0</span>
+        </div>
     </div>
 
-    <nav>
-        <a href="admin.html">Dashboard</a>
-        <a href="applications.html">Applications</a>
-        <a href="parcels.html">Parcels</a>
-        <a href="listings.html">Listings</a>
-    </nav>
-
-    <div style="position: relative; cursor: pointer;" onclick="toggleNotifications()">
-        🔔 <span id="notificationBadge">0</span>
-        <div id="notificationBox"></div>
-    </div>
-</header>
-
-<div class="container">
-
-    <h3>Admin Dashboard</h3>
-
-    <div>
-        <span>Realtime Connection:</span>
-        <span id="realtimeStatus" class="realtime-indicator">Offline</span>
+    <!-- NOTIFICATION BOX -->
+    <div id="notificationBox"
+         style="display:none; position:absolute; right:20px; top:70px; background:white; width:300px; 
+                box-shadow:0 0 10px rgba(0,0,0,0.2); padding:10px; max-height:300px; overflow-y:auto;">
+        <h4>Notifications</h4>
+        <div id="notificationList"></div>
     </div>
 
-    <div id="dashboardContent">
+    <!-- MAIN PAGE -->
+    <div class="content">
+        <h2>Admin Dashboard</h2>
+        <p><strong>Realtime Connection:</strong> <span id="socketStatus">Connecting…</span></p>
         <p>Loading dashboard...</p>
+
+        <div id="dashboardContent"></div>
+        <div id="applicationsContent"></div>
+        <div id="parcelsContent"></div>
+        <div id="listingsContent"></div>
     </div>
 
-</div>
 
-<script>
-function toggleNotifications() {
-    const box = document.getElementById("notificationBox");
-    box.style.display = box.style.display === "block" ? "none" : "block";
-}
-</script>
+    <!-- BACKEND SCRIPTS -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/helpers.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/socket.js"></script>
 
-<!-- Core backend API helpers -->
-<script src="/js/api.js"></script>
+    <!-- PAGE INITIALIZER -->
+    <script>
+        async function initAdminPage() {
+            console.log("🔧 Initializing Admin Dashboard...");
 
-<!-- Authentication + session handling -->
-<script src="/js/auth.js"></script>
+            // 1. Authentication required
+            await checkAuthAdmin();
 
-<!-- Admin-only actions -->
-<script src="/js/admin.js"></script>
+            // 2. Load notifications
+            loadNotifications();
 
-<!-- Existing scripts -->
-<script src="/socket.io/socket.io.js"></script>
-<script src="/js/helpers.js"></script>
-<script src="/js/notifications.js"></script>
-<script src="/js/socket.js"></script>
-<script src="/js/dashboard.js"></script>
+            // 3. Dashboard statistics
+            if (typeof loadAdminDashboard === "function") {
+                loadAdminDashboard();
+            }
+
+            // 4. Load applications
+            if (typeof loadApplications === "function") {
+                loadApplications();
+            }
+
+            // 5. Load parcels
+            if (typeof loadParcels === "function") {
+                loadParcels();
+            }
+
+            // 6. Load listings
+            if (typeof loadListings === "function") {
+                loadListings();
+            }
+
+            // 7. Enable realtime events
+            if (typeof initSocketListeners === "function") {
+                initSocketListeners();
+            }
+
+            console.log("✅ Admin Dashboard Ready");
+        }
+
+        function toggleNotifications() {
+            const box = document.getElementById("notificationBox");
+            box.style.display = box.style.display === "block" ? "none" : "block";
+        }
+    </script>
 
 </body>
 </html>
