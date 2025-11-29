@@ -24,4 +24,29 @@ router.use("/notifications", notificationRoutes);
 router.use("/search", searchRoutes);
 router.use("/reports", reportRoutes);
 
+// ============================
+// DASHBOARD SUMMARY ROUTE
+// ============================
+router.get("/dashboard", async (req, res) => {
+    try {
+        res.json({
+            status: "ok",
+            system: "MyLAN LIS Backend",
+            timestamp: new Date().toISOString(),
+
+            // add more metrics when ready:
+            totals: {
+                parcels: 0,
+                listings: 0,
+                applications: 0,
+                users: 0
+            }
+        });
+    } catch (error) {
+        console.error("Dashboard API error:", error);
+        res.status(500).json({ status: "error" });
+    }
+});
+
+
 export default router;
