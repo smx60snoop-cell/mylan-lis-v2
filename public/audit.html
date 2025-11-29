@@ -77,7 +77,16 @@ function toggleNotifications() {
 }
 </script>
 
-<!-- JS Includes -->
+<!-- REQUIRED: Core backend API connector -->
+<script src="/js/api.js"></script>
+
+<!-- REQUIRED: Authentication (token validation, login state) -->
+<script src="/js/auth.js"></script>
+
+<!-- REQUIRED: Admin-only audit fetch, CRUD actions -->
+<script src="/js/admin.js"></script>
+
+<!-- Existing scripts -->
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/helpers.js"></script>
 <script src="/js/notifications.js"></script>
