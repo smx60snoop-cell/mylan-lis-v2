@@ -2,103 +2,116 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyLAN InfoTech – Land Information System</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="/css/notifications.css">
-    <link rel="stylesheet" href="/css/realtime-indicators.css">
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/realtime-indicators.css">
 
     <style>
-        body { font-family: Arial, sans-serif; }
-        header {
-            padding: 15px;
-            background: #0b3d91;
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .topbar {
+            background-color: #0b3d91;
             color: white;
+            padding: 18px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        #notificationBadge {
+
+        .topbar .title {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .notif-icon {
+            cursor: pointer;
+            position: relative;
+            font-size: 22px;
+        }
+
+        .notif-count {
             background: red;
+            color: white;
+            font-size: 11px;
             padding: 3px 7px;
             border-radius: 50%;
-            font-size: 12px;
-            color: white;
-            margin-left: 6px;
-        }
-        #notificationBox {
-            background: white;
             position: absolute;
-            right: 15px;
-            top: 60px;
-            width: 260px;
-            max-height: 350px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            display: none;
-            z-index: 999;
+            top: -5px;
+            right: -12px;
         }
-        .notification-item {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
+
+        .content {
+            padding: 30px;
         }
-        .notif-title { font-weight: bold; }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 
-<body>
+<body onload="initPublicHome()">
 
-<header>
-    <div>
-        <h2>MyLAN InfoTech</h2>
+    <!-- TOP NAV BAR -->
+    <div class="topbar">
+        <div class="title">MyLAN InfoTech</div>
+
+        <div class="notif-icon" onclick="toggleNotifications()">
+            🔔
+            <span id="notifCount" class="notif-count">0</span>
+        </div>
     </div>
 
-    <div style="position: relative;">
-        <span onclick="toggleNotifications()" style="cursor:pointer;">
-            🔔 Notifications <span id="notificationBadge">0</span>
-        </span>
-
-        <div id="notificationBox"></div>
+    <!-- NOTIFICATIONS DROPDOWN -->
+    <div id="notificationBox"
+         style="display:none; position: absolute; right: 20px; top: 70px;
+                background:white; width:300px; max-height: 350px; overflow-y:auto;
+                padding:10px; border-radius:6px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
+        <h4>Notifications</h4>
+        <div id="notificationList"></div>
     </div>
-</header>
 
-<main style="padding: 20px;">
-    <h3>Welcome to the Land Information System</h3>
-    <p>This is the public portal.</p>
+    <!-- MAIN CONTENT -->
+    <div class="content">
+        <div class="card">
+            <h2>Welcome to the Land Information System</h2>
+            <p>This is the public portal.</p>
+        </div>
+    </div>
 
-    <div id="realtimeStatus" class="realtime-indicator">Offline</div>
-</main>
+    <!-- REQUIRED JS FILES -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/helpers.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/socket.js"></script>
 
-<script>
-function toggleNotifications() {
-    const box = document.getElementById("notificationBox");
-    box.style.display = box.style.display === "block" ? "none" : "block";
-}
-</script>
+    <!-- PAGE LOGIC -->
+    <script>
+        function initPublicHome() {
+            console.log("🌍 Initializing Public Index Page...");
 
-<!-- =============================== -->
-<!-- 🔥 BACKEND CORE SCRIPTS ADDED   -->
-<!-- =============================== -->
+            loadNotifications();    // Load notifications immediately
+            initSocketConnection(); // Socket real-time setup if user is logged in
+        }
 
-<!-- Handles API calls -->
-<script src="/js/api.js"></script>
-
-<!-- Manages login/token storage -->
-<script src="/js/auth.js"></script>
-
-<!-- Admin and protected operations -->
-<script src="/js/admin.js"></script>
-
-<!-- =============================== -->
-<!-- Your existing scripts           -->
-<!-- =============================== -->
-
-<script src="/socket.io/socket.io.js"></script>
-<script src="/js/helpers.js"></script>
-<script src="/js/notifications.js"></script>
-<script src="/js/socket.js"></script>
+        function toggleNotifications() {
+            const box = document.getElementById("notificationBox");
+            box.style.display = box.style.display === "block" ? "none" : "block";
+        }
+    </script>
 
 </body>
 </html>
