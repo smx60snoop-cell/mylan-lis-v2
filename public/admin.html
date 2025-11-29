@@ -1,108 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LIS Admin Dashboard</title>
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/notifications.css">
-    <link rel="stylesheet" href="css/realtime-indicators.css">
+    <link rel="stylesheet" href="css/notifications.css" />
+    <link rel="stylesheet" href="css/realtime-indicators.css" />
 
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
             background: #f5f7fa;
+            font-family: Arial, sans-serif;
         }
 
-        /* HEADER BAR */
+        /* Top navigation */
         .topbar {
-            background-color: #003c8f;
-            padding: 15px 20px;
-            color: white;
+            background: #0b3d91;
+            color: #fff;
+            padding: 14px 25px;
+            font-size: 20px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
         }
 
-        .topbar .nav-links a {
-            margin-right: 20px;
-            color: white;
+        .menu a {
+            color: #fff;
+            margin-right: 18px;
+            font-size: 15px;
             text-decoration: none;
+        }
+
+        /* Dashboard grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 18px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-size: 34px;
+            color: #0b3d91;
             font-weight: bold;
         }
 
-        .topbar .nav-links a:hover {
-            text-decoration: underline;
+        /* Chart container */
+        .chart-box {
+            background: #fff;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
-        /* CONTENT */
-        .content {
-            padding: 25px;
-        }
-
-        /* Notifications icon */
-        .notif-icon {
-            cursor: pointer;
-            position: relative;
-        }
-
-        .notif-count {
-            background: red;
-            color: white;
-            border-radius: 50%;
-            padding: 3px 7px;
-            font-size: 11px;
-            position: absolute;
-            top: -5px;
-            right: -10px;
+        #statsStatus {
+            margin-left: 20px;
+            color: #555;
         }
     </style>
 
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body onload="initAdminPage()">
+<body>
 
-    <!-- TOP HEADER -->
+    <!-- TOP BAR -->
     <div class="topbar">
-        <div class="logo-text">LIS Admin</div>
-
-        <div class="nav-links">
+        <div>LIS Admin</div>
+        <div class="menu">
             <a href="admin.html">Dashboard</a>
             <a href="applications.html">Applications</a>
             <a href="parcels.html">Parcels</a>
             <a href="listings.html">Listings</a>
+
+            <!-- Notifications icon -->
+            <span onclick="toggleNotifications()" style="cursor:pointer;">
+                <span class="notif-icon">🔔</span>
+                <span id="notificationCount" class="notif-count">0</span>
+            </span>
+        </div>
+    </div>
+
+    <p id="statsStatus">Loading dashboard…</p>
+
+    <!-- METRIC CARDS -->
+    <div class="grid">
+        <div class="card">
+            <div class="card-title">Total Parcels</div>
+            <div id="totalParcels" class="card-value">0</div>
         </div>
 
-        <div class="notif-icon" onclick="toggleNotifications()">
-            🔔
-            <span id="notifCount" class="notif-count">0</span>
+        <div class="card">
+            <div class="card-title">Total Listings</div>
+            <div id="totalListings" class="card-value">0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Pending Applications</div>
+            <div id="pendingApps" class="card-value">0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Payments Received</div>
+            <div id="totalPayments" class="card-value">₵0</div>
         </div>
     </div>
 
-    <!-- NOTIFICATION BOX -->
-    <div id="notificationBox"
-         style="display:none; position:absolute; right:20px; top:70px; background:white; width:300px; 
-                box-shadow:0 0 10px rgba(0,0,0,0.2); padding:10px; max-height:300px; overflow-y:auto;">
-        <h4>Notifications</h4>
-        <div id="notificationList"></div>
+    <!-- CHART -->
+    <div class="chart-box">
+        <h3 style="margin-top:0;">📈 Parcel Uploads (Weekly)</h3>
+        <canvas id="parcelChart" height="120"></canvas>
     </div>
 
-    <!-- MAIN PAGE -->
-    <div class="content">
-        <h2>Admin Dashboard</h2>
-        <p><strong>Realtime Connection:</strong> <span id="socketStatus">Connecting…</span></p>
-        <p>Loading dashboard...</p>
-
-        <div id="dashboardContent"></div>
-        <div id="applicationsContent"></div>
-        <div id="parcelsContent"></div>
-        <div id="listingsContent"></div>
-    </div>
-
-
-    <!-- BACKEND SCRIPTS -->
+    <!-- REQUIRED JS -->
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/admin.js"></script>
@@ -110,49 +137,57 @@
     <script src="js/notifications.js"></script>
     <script src="js/socket.js"></script>
 
-    <!-- PAGE INITIALIZER -->
     <script>
-        async function initAdminPage() {
-            console.log("🔧 Initializing Admin Dashboard...");
-
-            // 1. Authentication required
-            await checkAuthAdmin();
-
-            // 2. Load notifications
-            loadNotifications();
-
-            // 3. Dashboard statistics
-            if (typeof loadAdminDashboard === "function") {
-                loadAdminDashboard();
-            }
-
-            // 4. Load applications
-            if (typeof loadApplications === "function") {
-                loadApplications();
-            }
-
-            // 5. Load parcels
-            if (typeof loadParcels === "function") {
-                loadParcels();
-            }
-
-            // 6. Load listings
-            if (typeof loadListings === "function") {
-                loadListings();
-            }
-
-            // 7. Enable realtime events
-            if (typeof initSocketListeners === "function") {
-                initSocketListeners();
-            }
-
-            console.log("✅ Admin Dashboard Ready");
-        }
-
         function toggleNotifications() {
             const box = document.getElementById("notificationBox");
-            box.style.display = box.style.display === "block" ? "none" : "block";
+            box.style.display = (box.style.display === "block") ? "none" : "block";
         }
+
+        // DASHBOARD LOADER
+        document.addEventListener("DOMContentLoaded", async () => {
+            document.getElementById("statsStatus").textContent = "Loading dashboard…";
+
+            try {
+                const data = await apiGet("/dashboard");
+
+                // FILL METRICS
+                document.getElementById("totalParcels").textContent = data.totalParcels || 0;
+                document.getElementById("totalListings").textContent = data.totalListings || 0;
+                document.getElementById("pendingApps").textContent = data.pendingApplications || 0;
+                document.getElementById("totalPayments").textContent = "₵" + (data.totalPayments || 0);
+
+                document.getElementById("statsStatus").textContent = "Dashboard loaded.";
+
+                // CHART
+                const ctx = document.getElementById("parcelChart").getContext("2d");
+                new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: data.weekLabels,
+                        datasets: [
+                            {
+                                label: "Parcels Uploaded",
+                                data: data.weekData,
+                                borderColor: "#0b3d91",
+                                borderWidth: 3,
+                                fill: false,
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+
+            } catch (err) {
+                document.getElementById("statsStatus").textContent = "Failed to load dashboard.";
+                console.error(err);
+            }
+        });
     </script>
 
 </body>
