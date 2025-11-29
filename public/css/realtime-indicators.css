@@ -1,0 +1,66 @@
+/* ======================================================
+   REALTIME CONNECTION STATUS INDICATOR
+   ====================================================== */
+
+.realtime-indicator {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    color: white;
+    margin-top: 10px;
+}
+
+.realtime-indicator.connected {
+    background: #28a745;
+}
+
+.realtime-indicator.disconnected {
+    background: #dc3545;
+}
+
+/* ======================================================
+   PARCEL LOCKING INDICATOR
+   ====================================================== */
+
+#parcelLockIndicator {
+    padding: 6px;
+    font-weight: bold;
+    margin: 10px 0;
+    display: inline-block;
+}
+
+#parcelLockIndicator.locked {
+    color: #dc3545;
+}
+
+#parcelLockIndicator.unlocked {
+    color: #28a745;
+}
+
+/* Warning message inside parcel editor */
+#parcelEditWarning {
+    padding: 8px 12px;
+    border-radius: 4px;
+    background: #fff3cd;
+    color: #856404;
+    font-weight: bold;
+    margin-top: 10px;
+    display: none;
+    border: 1px solid #ffeeba;
+}
+
+/* ======================================================
+   HIGHLIGHT UPDATED TABLE ROWS
+   ====================================================== */
+
+.table-row-updated {
+    background: #fff3cd !important;
+    animation: highlightFade 2s forwards;
+}
+
+@keyframes highlightFade {
+    0% { background: #fff3cd; }
+    100% { background: none; }
+}
