@@ -1,96 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LIS Audit Panel</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="/css/notifications.css">
-    <link rel="stylesheet" href="/css/realtime-indicators.css">
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/realtime-indicators.css">
 
     <style>
-        body { margin: 0; font-family: Arial; }
-        header {
-            padding: 15px;
-            background: #2b2b2b;
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .topbar {
+            background-color: #222;
+            padding: 15px 20px;
             color: white;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
-        #notificationBadge {
+
+        .topbar .nav-links a {
+            margin-right: 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        .notif-icon {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .notif-count {
             background: red;
-            padding: 3px 6px;
+            color: white;
             border-radius: 50%;
+            padding: 3px 7px;
             font-size: 11px;
-        }
-        #notificationBox {
             position: absolute;
-            right: 15px;
-            top: 60px;
-            width: 250px;
-            display: none;
-            background: white;
-            border: 1px solid #ccc;
-            max-height: 350px;
-            overflow-y: auto;
-            z-index: 999;
+            top: -5px;
+            right: -10px;
         }
-        .notification-item {
+
+        .audit-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .audit-entry {
             padding: 10px;
             border-bottom: 1px solid #eee;
-            font-size: 14px;
         }
-        .notif-title { font-weight: bold; }
-        .container { padding: 20px; }
     </style>
 </head>
 
-<body>
+<body onload="initAuditPage()">
 
-<header>
-    <h2>Audit Panel</h2>
+    <!-- HEADER -->
+    <div class="topbar">
+        <div class="logo-text">Audit Panel</div>
 
-    <div onclick="toggleNotifications()" style="cursor: pointer;">
-        🔔 <span id="notificationBadge">0</span>
-        <div id="notificationBox"></div>
-    </div>
-</header>
+        <div class="nav-links">
+            <a href="admin.html">Admin Dashboard</a>
+        </div>
 
-<div class="container">
-
-    <h3>Audit Dashboard</h3>
-
-    <p>Monitoring system changes in real-time.</p>
-
-    <div id="realtimeStatus" class="realtime-indicator">Offline</div>
-
-    <div id="auditLogs">
-        <p>Listening for system updates...</p>
+        <div class="notif-icon" onclick="toggleNotifications()">
+            🔔
+            <span id="notifCount" class="notif-count">0</span>
+        </div>
     </div>
 
-</div>
+    <!-- NOTIFICATION BOX -->
+    <div id="notificationBox"
+        style="display:none; position:absolute; right:20px; top:70px; background:white; width:300px; 
+               box-shadow:0 0 10px rgba(0,0,0,0.2); padding:10px; max-height:300px; overflow-y:auto;">
+        <h4>Notifications</h4>
+        <div id="notificationList"></div>
+    </div>
 
-<script>
-function toggleNotifications() {
-    const box = document.getElementById("notificationBox");
-    box.style.display = box.style.display === "block" ? "none" : "block";
-}
-</script>
+    <!-- MAIN PAGE -->
+    <div class="content">
+        <h2>Audit Dashboard</h2>
+        <p><strong>Monitoring system changes in real-time.</strong></p>
+        <p>Listening for system updates…</p>
 
-<!-- REQUIRED: Core backend API connector -->
-<script src="/js/api.js"></script>
+        <div class="audit-box" id="auditBox">
+            <div class="audit-entry">Initializing audit logs…</div>
+        </div>
+    </div>
 
-<!-- REQUIRED: Authentication (token validation, login state) -->
-<script src="/js/auth.js"></script>
 
-<!-- REQUIRED: Admin-only audit fetch, CRUD actions -->
-<script src="/js/admin.js"></script>
+    <!-- JS BACKEND LOGIC -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/helpers.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/socket.js"></script>
 
-<!-- Existing scripts -->
-<script src="/socket.io/socket.io.js"></script>
-<script src="/js/helpers.js"></script>
-<script src="/js/notifications.js"></script>
-<script src="/js/socket.js"></script>
+    <script>
+        async function initAuditPage() {
+            console.log("🔍 Initializing Audit Page...");
 
+            // Must be logged in
+            await checkAuthAdmin();
+
+            // Load notifications
+            loadNotifications();
+
+            // Load past audit log
+            if (typeof loadAuditLog === "function") {
+                loadAuditLog();
+            }
+
+            // Listen for real-time audit events
+            if (typeof initAuditSocket === "function") {
+                initAuditSocket();
+            }
+
+            console.log("✅ Audit page ready");
+        }
+
+        function toggleNotifications() {
+            const box = document.getElementById("notificationBox");
+            box.style.display = box.style.display === "block" ? "none" : "block";
+        }
+    </script>
 </body>
 </html>
