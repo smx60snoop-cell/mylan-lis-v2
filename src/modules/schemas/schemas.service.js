@@ -1,69 +1,44 @@
-import db from "../../config/db.js";
+import { db } from "../../config/db.js";
 
 export const SchemasService = {
-    async getAll() {
-        const q = `
-            SELECT id, schema_name, description, created_at
+    async list() {
+        const r = await db.query(`
+            SELECT id, schema_name, description
             FROM schemas
-            ORDER BY schema_name ASC
-        `;
-        const result = await db.query(q);
-        return result.rows;
+            ORDER BY id DESC
+        `);
+        return r.rows;
     },
 
-    async getOne(id) {
-        const q = `
+    async get(id) {
+        const r = await db.query(`
             SELECT id, schema_name, description
             FROM schemas
             WHERE id = $1
-        `;
-        const res = await db.query(q, [id]);
-        return res.rows[0];
+        `, [id]);
+        return r.rows[0] || null;
     },
 
-    async getByName(schemaName) {
-        const q = `
-            SELECT id, schema_name, description
-            FROM schemas
-            WHERE schema_name = $1
-        `;
-        const res = await db.query(q, [schemaName]);
-        return res.rows[0];
-    },
-
-    async create(name, description = "") {
-        const q = `
+    async create(schemaName, description) {
+        const r = await db.query(`
             INSERT INTO schemas (schema_name, description)
             VALUES ($1, $2)
-            RETURNING id, schema_name, description
-        `;
-        const res = await db.query(q, [name, description]);
-        return res.rows[0];
+            RETURNING *
+        `, [schemaName, description]);
+        return r.rows[0];
     },
 
-    async update(id, name, description) {
-        const q = `
+    async update(id, description) {
+        const r = await db.query(`
             UPDATE schemas
-            SET schema_name = $1, description = $2
-            WHERE id = $3
-            RETURNING id, schema_name, description
-        `;
-
-        const res = await db.query(q, [name, description, id]);
-        return res.rows[0];
+            SET description = $1
+            WHERE id = $2
+            RETURNING *
+        `, [description, id]);
+        return r.rows[0];
     },
 
     async remove(id) {
-        // Prevent deletion if referenced in other tables
-        const check = await db.query(
-            `SELECT * FROM parcels WHERE schema_id = $1 LIMIT 1`,
-            [id]
-        );
-
-        if (check.rowCount > 0) {
-            throw new Error("Cannot delete schema — parcels still reference it.");
-        }
-
         await db.query(`DELETE FROM schemas WHERE id = $1`, [id]);
         return true;
     }
