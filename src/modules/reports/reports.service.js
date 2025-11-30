@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import puppeteer from "puppeteer";
 import { ensureDir } from "../../utils/file.js";
-import { db } from "../../config/db.js";
+import db from "../../config/db.js";
 
 export const ReportsService = {
 
