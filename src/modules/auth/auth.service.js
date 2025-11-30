@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { db } from "../../config/db.js";
+import pool from "../../config/db.js";     // ✅ FIXED
 import { ENV } from "../../config/env.js";
 import { hashPassword, comparePassword } from "../../utils/crypto.js";
 
@@ -13,7 +13,7 @@ export const AuthService = {
             RETURNING id, username, role
         `;
 
-        const result = await db.query(q, [username, hashed, role]);
+        const result = await pool.query(q, [username, hashed, role]);   // ✅ FIXED
 
         return result.rows[0];
     },
@@ -25,7 +25,7 @@ export const AuthService = {
             WHERE username = $1
         `;
 
-        const result = await db.query(q, [username]);
+        const result = await pool.query(q, [username]);   // ✅ FIXED
 
         if (result.rowCount === 0) return null;
 
