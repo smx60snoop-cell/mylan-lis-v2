@@ -1,4 +1,4 @@
-import { db } from "../config/db.js";
+import db from "../../config/db.js";
 
 export const requireRole = (allowedRoles = []) => {
     return async (req, res, next) => {
