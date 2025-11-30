@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import pool from "../../config/db.js";     // ✅ FIXED
+import db from "../../config/db.js";    // ✅ FIXED
 import { ENV } from "../../config/env.js";
 import { hashPassword, comparePassword } from "../../utils/crypto.js";
 
