@@ -3,9 +3,13 @@ import pool from "../../config/db.js";
 
 const router = Router();
 
+// ============================
+// Dashboard Summary API
+// ============================
+
 router.get("/", async (req, res) => {
     try {
-        // Query simple counts — guaranteed to work
+        // Basic, safe queries
         const parcels = await pool.query("SELECT COUNT(*) FROM parcels");
         const listings = await pool.query("SELECT COUNT(*) FROM listings");
         const applications = await pool.query("SELECT COUNT(*) FROM applications");
