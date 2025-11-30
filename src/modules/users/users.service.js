@@ -1,4 +1,4 @@
-import { db } from "../../config/db.js";
+import db from "../../config/db.js";
 import { hashPassword } from "../../utils/crypto.js";
 
 export const UsersService = {
