@@ -5,7 +5,6 @@ dotenv.config();
 
 const { Pool } = pkg;
 
-// Create the pool
 const pool = new Pool({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -17,15 +16,8 @@ const pool = new Pool({
     connectionTimeoutMillis: 2000,
 });
 
-// Pool event logging
-pool.on("connect", () => {
-    console.log("🔌 PostgreSQL connected");
-});
+pool.on("connect", () => console.log("🔌 PostgreSQL connected"));
+pool.on("error", err => console.error("❌ PostgreSQL error:", err));
 
-pool.on("error", (err) => {
-    console.error("❌ PostgreSQL error:", err);
-});
-
-// Make it compatible with ALL imports
-export const db = pool;     // <--- REQUIRED BY services
-export default pool;        // <--- Optional default export
+export const db = pool;
+export default pool;
