@@ -1,32 +1,32 @@
-import express from "express";
-import db from "../../config/db.js";
+import { Router } from "express";
+import pool from "../../config/db.js";
 
-const router = express.Router();
+const router = Router();
 
 router.get("/", async (req, res) => {
     try {
-        // Example: Replace queries with your actual DB tables
-        const [parcels] = await db.query("SELECT COUNT(*) AS total FROM parcels");
-        const [listings] = await db.query("SELECT COUNT(*) AS total FROM listings");
-        const [applications] = await db.query(
-            "SELECT COUNT(*) AS total FROM applications WHERE status = 'pending'"
-        );
-        const [users] = await db.query("SELECT COUNT(*) AS total FROM users");
+        // Query simple counts — guaranteed to work
+        const parcels = await pool.query("SELECT COUNT(*) FROM parcels");
+        const listings = await pool.query("SELECT COUNT(*) FROM listings");
+        const applications = await pool.query("SELECT COUNT(*) FROM applications");
+        const users = await pool.query("SELECT COUNT(*) FROM users");
 
-        return res.json({
+        res.json({
             status: "ok",
             system: "MyLAN LIS Backend",
             timestamp: new Date().toISOString(),
+
             totals: {
-                parcels: parcels[0].total,
-                listings: listings[0].total,
-                applications: applications[0].total,
-                users: users[0].total
+                parcels: Number(parcels.rows[0].count),
+                listings: Number(listings.rows[0].count),
+                applications: Number(applications.rows[0].count),
+                users: Number(users.rows[0].count)
             }
         });
+
     } catch (error) {
         console.error("Dashboard API error:", error);
-        return res.status(500).json({ status: "error" });
+        res.status(500).json({ status: "error" });
     }
 });
 
