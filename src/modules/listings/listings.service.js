@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { db } from "../../config/db.js";
+import db from "../../config/db.js";
 import { ensureDir } from "../../utils/file.js";
 import { 
     emitListingCreated,
