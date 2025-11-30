@@ -1,4 +1,4 @@
-import { db } from "../../config/db.js";
+import db from "../../config/db.js";
 import { geoJSONToWKT } from "../../utils/geometry.js";
 import {
     emitParcelUpdated,
