@@ -12,7 +12,7 @@ import notificationRoutes from "./modules/notifications/notifications.routes.js"
 import searchRoutes from "./modules/search/search.routes.js";
 import reportRoutes from "./modules/reports/reports.routes.js";
 
-// 🔥 FIX — import dashboard route module
+// 🔥 FIX — Import dashboard route module
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 
 const router = Router();
@@ -30,5 +30,4 @@ router.use("/search", searchRoutes);
 router.use("/reports", reportRoutes);
 router.use("/dashboard", dashboardRoutes);
 
-// Export master router
 export default router;
