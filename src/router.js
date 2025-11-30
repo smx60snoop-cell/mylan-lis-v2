@@ -23,6 +23,7 @@ router.use("/listings", listingRoutes);
 router.use("/notifications", notificationRoutes);
 router.use("/search", searchRoutes);
 router.use("/reports", reportRoutes);
+router.use("/dashboard", dashboardRoutes); 
 
 // ============================
 // DASHBOARD SUMMARY ROUTE
